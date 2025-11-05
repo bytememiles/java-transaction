@@ -1,7 +1,10 @@
 package com.mamoru.transactionsystem.presentation;
 
+import com.mamoru.transactionsystem.common.config.DockerCondition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mamoru.transactionsystem.user.presentation.dto.UserRequest;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +30,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerIntegrationTest {
     
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withDatabaseName("test_transaction_system")
-            .withUsername("test")
-            .withPassword("test");
+    static PostgreSQLContainer<?> postgres = DockerCondition.isDockerAvailable() 
+            ? new PostgreSQLContainer<>("postgres:15-alpine")
+                    .withDatabaseName("test_transaction_system")
+                    .withUsername("test")
+                    .withPassword("test")
+            : null;
+    
+    @BeforeAll
+    static void checkDocker() {
+        Assumptions.assumeTrue(DockerCondition.isDockerAvailable(), 
+            "Docker is not available. Skipping integration tests.");
+        Assumptions.assumeTrue(postgres != null, "PostgreSQL container not initialized.");
+    }
     
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
+        Assumptions.assumeTrue(postgres != null, "PostgreSQL container not available.");
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);

@@ -25,8 +25,9 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <flyway.version>10.0.1</flyway.version>
-        <!-- Skip integration tests by default (require Docker) -->
-        <skip.integration.tests>integration</skip.integration.tests>
+        <!-- Include integration tests flag (default: false, requires Docker) -->
+        <!-- Set to true to run integration tests: -Dinclude.integration.tests=true -->
+        <include.integration.tests>false</include.integration.tests>
     </properties>
 
     <dependencies>
@@ -156,8 +157,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <!-- Exclude integration tests by default (require Docker) -->
-                    <!-- Run with -Dskip.integration.tests= to include them (empty value) -->
-                    <excludedGroups>${skip.integration.tests}</excludedGroups>
+                    <!-- Run with -Dinclude.integration.tests=true to include them -->
+                    <excludedGroups>integration</excludedGroups>
                 </configuration>
             </plugin>
             

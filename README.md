@@ -202,6 +202,18 @@ The project includes comprehensive unit and integration tests:
 mvn test
 ```
 
+This runs all **unit tests** by default. Integration tests are excluded by default (require Docker).
+
+### Run Integration Tests
+
+Integration tests require Docker to be running and accessible. To run all tests including integration tests:
+
+```bash
+mvn test -Dsurefire.excludedGroups=
+```
+
+**Note:** Make sure Docker is running and your user has permission to access Docker. If you get permission errors, see [Docker Permission Issues](#docker-permission-issues) in the SETUP_GUIDE.md.
+
 ### Run Tests with Coverage
 
 ```bash
@@ -220,6 +232,8 @@ The project targets **80% unit test coverage** for core business logic:
 
 ### Test Configuration
 
+- **Unit Tests**: Run by default with `mvn test`
+- **Integration Tests**: Excluded by default, require Docker. Run with `mvn test -Dsurefire.excludedGroups=`
 - **Testcontainers**: Real PostgreSQL container for integration tests
 - **Test Profile**: Uses `application-test.yml` with test-specific configuration
 - **Flyway**: Disabled in tests (uses `ddl-auto: create-drop` instead)

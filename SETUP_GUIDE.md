@@ -203,6 +203,22 @@ groups
 # Should include 'docker'
 ```
 
+**After adding yourself to the docker group, you need to:**
+1. Log out and log back in, OR
+2. Use `newgrp docker` in your current terminal, OR
+3. Open a new terminal session
+
+**Running Integration Tests:**
+
+Once Docker permissions are fixed, you can run integration tests:
+
+```bash
+# Run all tests including integration tests (requires Docker)
+mvn test -Dsurefire.excludedGroups=
+```
+
+Integration tests use Testcontainers to spin up a real PostgreSQL container for testing.
+
 ## Alternative: Using IDE
 
 You can also run the application from your IDE:
