@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test_transaction_system
+    username: test
+    password: test
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  flyway:
+    enabled: false  # Disable Flyway in tests, use ddl-auto instead
+
+logging:
+  level:
+    root: WARN
+    com.mamoru: DEBUG
+

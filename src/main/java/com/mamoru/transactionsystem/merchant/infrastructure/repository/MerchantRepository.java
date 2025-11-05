@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.LockModeType;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,5 +17,7 @@ public interface MerchantRepository extends JpaRepository<Merchant, Long> {
     @Lock(LockModeType.OPTIMISTIC)
     @Query("SELECT m FROM Merchant m WHERE m.id = :id")
     Optional<Merchant> findByIdWithLock(@Param("id") Long id);
+    
+    List<Merchant> findAll();
 }
 

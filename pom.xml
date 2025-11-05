@@ -25,6 +25,8 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <flyway.version>10.0.1</flyway.version>
+        <!-- Skip integration tests by default (require Docker) -->
+        <skip.integration.tests>integration</skip.integration.tests>
     </properties>
 
     <dependencies>
@@ -145,6 +147,17 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            
+            <!-- Maven Surefire Plugin for running tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- Exclude integration tests by default (require Docker) -->
+                    <!-- Run with -Dskip.integration.tests= to include them (empty value) -->
+                    <excludedGroups>${skip.integration.tests}</excludedGroups>
                 </configuration>
             </plugin>
             
