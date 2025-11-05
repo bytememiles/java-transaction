@@ -192,6 +192,9 @@ The application uses a `.env` file for environment-based configuration. This all
 - `DB_USERNAME` - Database username (default: `postgres`)
 - `DB_PASSWORD` - Database password (default: `postgres`)
 
+#### Docker Configuration
+- `DB_CONTAINER_NAME` - Docker container name for PostgreSQL (default: `transaction-system-db`)
+
 #### Application Configuration
 - `SERVER_PORT` - Server port (default: `8080`)
 - `APP_NAME` - Application name (default: `transaction-system`)
@@ -391,6 +394,83 @@ Migration commands respect your `.env` file configuration:
 - `DB_NAME` - Database name
 - `DB_USERNAME` - Database username
 - `DB_PASSWORD` - Database password
+
+## Database Seeding
+
+The project includes a seeding script to populate the database with sample data for development and testing.
+
+### Seed Data Includes
+
+- **5 Sample Users** with accounts and initial balances:
+  - `john_doe` - $1000.00
+  - `jane_smith` - $500.00
+  - `bob_wilson` - $750.00
+  - `alice_brown` - $2000.00
+  - `charlie_davis` - $100.00
+
+- **4 Sample Merchants**:
+  - Tech Store
+  - Fashion Boutique
+  - Electronics Hub
+  - Book Emporium
+
+- **Multiple Products** across all merchants with inventory
+
+- **Sample Account Transactions** (recharges)
+
+### Running the Seed Script
+
+#### Option 1: Using Shell Script (Recommended)
+
+```bash
+./scripts/seed-database.sh
+```
+
+The script will:
+- Check database connection
+- Ask for confirmation
+- Run the seeding SQL script
+- Display a summary
+
+#### Option 2: Using Maven
+
+```bash
+# Run the shell script via Maven
+mvn exec:exec@seed-database
+
+# Or run SQL directly via Maven
+mvn sql:execute@seed-database-sql
+```
+
+#### Option 3: Using psql Directly
+
+```bash
+# Load environment variables from .env
+export $(grep -v '^#' .env | xargs)
+
+# Run the seed script
+psql -h ${DB_HOST:-localhost} -p ${DB_PORT:-5432} -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-transaction_system} -f src/main/resources/db/seeds/seed_data.sql
+```
+
+### Seed Script Location
+
+The seed script is located at:
+- `src/main/resources/db/seeds/seed_data.sql`
+
+### Notes
+
+- The seed script uses `ON CONFLICT DO NOTHING` / `ON CONFLICT DO UPDATE` to be idempotent
+- You can run it multiple times safely - it will update existing data or skip duplicates
+- To reset seed data, you can clean the database first: `mvn flyway:clean` (⚠️ WARNING: deletes all data)
+
+### Customizing Seed Data
+
+Edit `src/main/resources/db/seeds/seed_data.sql` to customize:
+- Number of users
+- Initial account balances
+- Merchants and their products
+- Inventory quantities
+- Sample transactions
 
 ## Development Workflow
 
