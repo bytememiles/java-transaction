@@ -156,30 +156,83 @@ All endpoints are documented in Swagger UI. Access at: http://localhost:8080/swa
 
 ## Configuration
 
-Application configuration is in `src/main/resources/application.yml`:
+The application uses a `.env` file for environment-based configuration. This allows you to configure the application without modifying code files.
 
-### Database
-- PostgreSQL connection settings
-- HikariCP connection pool configuration
-- Flyway migration settings
+### Setting Up Environment Variables
 
-### Reconciliation
-- **Cron Schedule**: `app.reconciliation.cron` (default: `0 0 2 * * *` - daily at 2 AM)
-- **Enabled**: `app.reconciliation.enabled` (default: `true`)
-- Runs automatically for all merchants daily
-- Can be manually triggered via API
+1. **Copy the example file:**
+   ```bash
+   cp .env.example .env
+   ```
 
-### API Documentation
-- Swagger UI path: `/swagger-ui.html`
-- API Docs JSON: `/api-docs`
-- Package scanning and path matching configured
+2. **Edit `.env` file** with your configuration values:
+   ```bash
+   # Database Configuration
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=transaction_system
+   DB_USERNAME=postgres
+   DB_PASSWORD=postgres
+   
+   # Application Configuration
+   SERVER_PORT=8080
+   APP_NAME=transaction-system
+   
+   # ... and more
+   ```
 
-### Currency
-- Default currency: `USD` (configurable via `app.currency.defaultCurrency`)
+3. **The `.env` file is git-ignored** - your local configuration won't be committed to the repository.
 
-### Logging
-- Configurable logging levels for different packages
-- SQL query logging (disabled by default, can be enabled for debugging)
+### Configuration Variables
+
+#### Database Configuration
+- `DB_HOST` - Database host (default: `localhost`)
+- `DB_PORT` - Database port (default: `5432`)
+- `DB_NAME` - Database name (default: `transaction_system`)
+- `DB_USERNAME` - Database username (default: `postgres`)
+- `DB_PASSWORD` - Database password (default: `postgres`)
+
+#### Application Configuration
+- `SERVER_PORT` - Server port (default: `8080`)
+- `APP_NAME` - Application name (default: `transaction-system`)
+
+#### Reconciliation
+- `RECONCILIATION_ENABLED` - Enable/disable reconciliation (default: `true`)
+- `RECONCILIATION_CRON` - Cron schedule (default: `0 0 2 * * *` - daily at 2 AM)
+- `DEFAULT_CURRENCY` - Default currency (default: `USD`)
+
+#### Logging
+- `LOG_LEVEL_ROOT` - Root log level (default: `INFO`)
+- `LOG_LEVEL_APP` - Application log level (default: `DEBUG`)
+- `LOG_SQL_ENABLED` - Enable SQL logging (default: `false`)
+
+#### JPA/Hibernate
+- `JPA_DDL_AUTO` - DDL mode (default: `validate`)
+- `JPA_SHOW_SQL` - Show SQL queries (default: `false`)
+- `JPA_BATCH_SIZE` - Batch size (default: `20`)
+
+#### Connection Pool (HikariCP)
+- `HIKARI_MAX_POOL_SIZE` - Maximum pool size (default: `10`)
+- `HIKARI_MIN_IDLE` - Minimum idle connections (default: `5`)
+- `HIKARI_CONNECTION_TIMEOUT` - Connection timeout in ms (default: `30000`)
+
+#### Flyway
+- `FLYWAY_ENABLED` - Enable Flyway migrations (default: `true`)
+
+#### Swagger/OpenAPI
+- `SWAGGER_ENABLED` - Enable Swagger UI (default: `true`)
+- `SWAGGER_UI_PATH` - Swagger UI path (default: `/swagger-ui.html`)
+
+### Configuration Priority
+
+Configuration is loaded in the following order (highest priority first):
+1. System environment variables
+2. `.env` file (project root)
+3. `application.yml` defaults
+
+### Docker Compose Integration
+
+The `docker-compose.yml` file automatically loads variables from `.env`, so your database configuration will be consistent across the application and Docker containers.
 
 ## Testing
 

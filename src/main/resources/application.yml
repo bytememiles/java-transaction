@@ -1,35 +1,35 @@
 spring:
   application:
-    name: transaction-system
+    name: ${APP_NAME:transaction-system}
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/transaction_system
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:transaction_system}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      connection-timeout: 30000
+      maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:10}
+      minimum-idle: ${HIKARI_MIN_IDLE:5}
+      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT:30000}
   
   jpa:
     hibernate:
-      ddl-auto: validate
-    show-sql: false
+      ddl-auto: ${JPA_DDL_AUTO:validate}
+    show-sql: ${JPA_SHOW_SQL:false}
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         jdbc:
-          batch_size: 20
+          batch_size: ${JPA_BATCH_SIZE:20}
   
   flyway:
-    enabled: true
+    enabled: ${FLYWAY_ENABLED:true}
     locations: classpath:db/migration
     baseline-on-migrate: true
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
   error:
     include-message: always
     include-binding-errors: always
@@ -46,25 +46,25 @@ springdoc:
   api-docs:
     path: /api-docs
   swagger-ui:
-    path: /swagger-ui.html
-    enabled: true
+    path: ${SWAGGER_UI_PATH:/swagger-ui.html}
+    enabled: ${SWAGGER_ENABLED:true}
     try-it-out-enabled: true
   packages-to-scan: com.mamoru.transactionsystem
   paths-to-match: /api/**
 
 logging:
   level:
-    root: INFO
-    com.mamoru: DEBUG
-    org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.mamoru: ${LOG_LEVEL_APP:DEBUG}
+    org.springframework.web: ${LOG_LEVEL_APP:DEBUG}
+    org.hibernate.SQL: ${LOG_SQL_ENABLED:false}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${LOG_SQL_ENABLED:false}
 
 # Application specific configurations
 app:
   reconciliation:
-    cron: "0 0 2 * * *"  # Daily at 2 AM
-    enabled: true
+    cron: "${RECONCILIATION_CRON:0 0 2 * * *}"  # Daily at 2 AM
+    enabled: ${RECONCILIATION_ENABLED:true}
   currency:
-    default: USD
+    default: ${DEFAULT_CURRENCY:USD}
 

@@ -61,6 +61,29 @@ docker-compose --version
 docker compose version
 ```
 
+## Environment Configuration
+
+The application uses a `.env` file for configuration. Before running the application:
+
+1. **Copy the example environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env` file** (optional - defaults work for local development):
+   ```bash
+   nano .env  # or use your preferred editor
+   ```
+
+   Key variables you might want to change:
+   - `DB_PASSWORD` - Database password
+   - `SERVER_PORT` - Application port (default: 8080)
+   - `LOG_LEVEL_APP` - Logging level (default: DEBUG)
+
+3. **The `.env` file is git-ignored** - your local changes won't be committed.
+
+For a complete list of configuration variables, see the [Configuration section](../README.md#configuration) in README.md.
+
 ## Quick Launch
 
 Once all prerequisites are installed, you can use the launch script:
