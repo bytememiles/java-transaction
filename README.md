@@ -302,6 +302,96 @@ The initial schema (`V1__initial_schema.sql`) creates all necessary tables:
 - Orders and Payments
 - Reconciliation Reports
 
+### Flyway Migration Commands
+
+Flyway runs automatically when the application starts, but you can also run migrations manually using Maven commands:
+
+#### Run Migrations
+
+```bash
+# Run all pending migrations
+mvn flyway:migrate
+
+# Run with custom database settings (if not using .env)
+mvn flyway:migrate -DDB_HOST=localhost -DDB_PORT=5432 -DDB_NAME=transaction_system -DDB_USERNAME=postgres -DDB_PASSWORD=postgres
+```
+
+#### Check Migration Status
+
+```bash
+# Check which migrations have been applied
+mvn flyway:info
+```
+
+#### Validate Migrations
+
+```bash
+# Validate that migrations haven't been modified
+mvn flyway:validate
+```
+
+#### Repair Migrations
+
+```bash
+# Repair the Flyway schema history table if it's corrupted
+mvn flyway:repair
+```
+
+#### Baseline Database
+
+```bash
+# Mark an existing database as baseline (for databases that existed before Flyway)
+mvn flyway:baseline
+```
+
+#### Clean Database (⚠️ Use with caution!)
+
+```bash
+# Drops all database objects (WARNING: This will delete all data!)
+mvn flyway:clean
+```
+
+### Creating New Migrations
+
+1. **Create a new migration file** in `src/main/resources/db/migration/`:
+   - Naming convention: `V{version}__{description}.sql`
+   - Example: `V2__add_user_profile_table.sql`
+   - Example: `V3__add_indexes.sql`
+
+2. **Migration files are versioned** - Flyway tracks which migrations have been applied
+
+3. **Example migration file:**
+   ```sql
+   -- V2__add_user_profile_table.sql
+   CREATE TABLE user_profiles (
+       id BIGSERIAL PRIMARY KEY,
+       user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+       first_name VARCHAR(100),
+       last_name VARCHAR(100),
+       phone VARCHAR(20),
+       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+   );
+   ```
+
+### Migration Best Practices
+
+- ✅ **Never modify existing migration files** after they've been applied to production
+- ✅ **Use version numbers sequentially** (V1, V2, V3, ...)
+- ✅ **Test migrations** on a copy of production data before applying
+- ✅ **Use descriptive names** for migration files
+- ✅ **Keep migrations small and focused** - one logical change per migration
+- ✅ **Always backup** the database before running migrations in production
+
+### Environment Variables
+
+Migration commands respect your `.env` file configuration:
+- `DB_HOST` - Database host
+- `DB_PORT` - Database port  
+- `DB_NAME` - Database name
+- `DB_USERNAME` - Database username
+- `DB_PASSWORD` - Database password
+
 ## Development Workflow
 
 1. **Create Feature Branch**: `git checkout -b feature/your-feature-name`
