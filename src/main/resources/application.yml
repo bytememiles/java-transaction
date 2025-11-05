@@ -48,6 +48,9 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     enabled: true
+    try-it-out-enabled: true
+  packages-to-scan: com.mamoru.transactionsystem
+  paths-to-match: /api/**
 
 logging:
   level:
