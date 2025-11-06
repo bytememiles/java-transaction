@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/merchants")
 @RequiredArgsConstructor
@@ -53,7 +55,7 @@ public class MerchantController {
     @GetMapping("/{merchantId}")
     @Operation(summary = "Get merchant by ID", description = "Retrieves merchant details including account balance")
     public ResponseEntity<ApiResponse<MerchantResponse>> getMerchant(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId) {
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId) {
         log.info("Fetching merchant with ID: {}", merchantId);
         
         Merchant merchant = merchantService.getMerchantById(merchantId);

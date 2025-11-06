@@ -8,17 +8,18 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderResponse {
-    private Long id;
+    private UUID id;
     private String orderNumber;
-    private Long userId;
-    private Long productId;
-    private Long merchantId;
+    private UUID userId;
+    private UUID productId;
+    private UUID merchantId;
     private String sku;
     private Integer quantity;
     private BigDecimal unitPrice;

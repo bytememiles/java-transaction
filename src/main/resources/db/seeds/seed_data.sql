@@ -1,6 +1,6 @@
 -- Seed Data Script for Transaction System
 -- This script populates the database with sample data for development and testing
--- Run this after the initial schema migration (V1__initial_schema.sql)
+-- Run this after the UUID migration (V2__change_ids_to_uuid.sql)
 
 -- Clear existing seed data (optional - comment out if you want to keep existing data)
 -- DELETE FROM reconciliation_reports;
@@ -14,101 +14,112 @@
 -- DELETE FROM accounts;
 -- DELETE FROM users;
 
--- Reset sequences (if needed)
--- ALTER SEQUENCE users_id_seq RESTART WITH 1;
--- ALTER SEQUENCE merchants_id_seq RESTART WITH 1;
+-- Predefined UUIDs for consistent foreign key relationships
+-- Users
+-- User IDs
+-- 550e8400-e29b-41d4-a716-446655440000 = john_doe
+-- 550e8400-e29b-41d4-a716-446655440001 = jane_smith
+-- 550e8400-e29b-41d4-a716-446655440002 = bob_wilson
+-- 550e8400-e29b-41d4-a716-446655440003 = alice_brown
+-- 550e8400-e29b-41d4-a716-446655440004 = charlie_davis
 
--- Seed Users and Accounts
-INSERT INTO users (username, email, created_at, updated_at) VALUES
-('john_doe', 'john.doe@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('jane_smith', 'jane.smith@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('bob_wilson', 'bob.wilson@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('alice_brown', 'alice.brown@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('charlie_davis', 'charlie.davis@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+-- Account IDs
+-- 660e8400-e29b-41d4-a716-446655440000 = john_doe account
+-- 660e8400-e29b-41d4-a716-446655440001 = jane_smith account
+-- 660e8400-e29b-41d4-a716-446655440002 = bob_wilson account
+-- 660e8400-e29b-41d4-a716-446655440003 = alice_brown account
+-- 660e8400-e29b-41d4-a716-446655440004 = charlie_davis account
+
+-- Merchant IDs
+-- 770e8400-e29b-41d4-a716-446655440000 = Tech Store
+-- 770e8400-e29b-41d4-a716-446655440001 = Fashion Boutique
+-- 770e8400-e29b-41d4-a716-446655440002 = Electronics Hub
+-- 770e8400-e29b-41d4-a716-446655440003 = Book Emporium
+
+-- Seed Users
+INSERT INTO users (id, username, email, created_at, updated_at) VALUES
+('550e8400-e29b-41d4-a716-446655440000', 'john_doe', 'john.doe@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('550e8400-e29b-41d4-a716-446655440001', 'jane_smith', 'jane.smith@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('550e8400-e29b-41d4-a716-446655440002', 'bob_wilson', 'bob.wilson@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('550e8400-e29b-41d4-a716-446655440003', 'alice_brown', 'alice.brown@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('550e8400-e29b-41d4-a716-446655440004', 'charlie_davis', 'charlie.davis@example.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (username) DO NOTHING;
 
 -- Create accounts for users (with initial balances)
-INSERT INTO accounts (user_id, balance, currency, version, created_at, updated_at)
-SELECT u.id, 
-       CASE 
-           WHEN u.username = 'john_doe' THEN 1000.00
-           WHEN u.username = 'jane_smith' THEN 500.00
-           WHEN u.username = 'bob_wilson' THEN 750.00
-           WHEN u.username = 'alice_brown' THEN 2000.00
-           ELSE 100.00
-       END,
-       'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-FROM users u
-WHERE u.username IN ('john_doe', 'jane_smith', 'bob_wilson', 'alice_brown', 'charlie_davis')
+INSERT INTO accounts (id, user_id, balance, currency, version, created_at, updated_at) VALUES
+('660e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440000', 1000.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('660e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440001', 500.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('660e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440002', 750.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('660e8400-e29b-41d4-a716-446655440003', '550e8400-e29b-41d4-a716-446655440003', 2000.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('660e8400-e29b-41d4-a716-446655440004', '550e8400-e29b-41d4-a716-446655440004', 100.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (user_id) DO NOTHING;
 
 -- Seed Merchants
-INSERT INTO merchants (name, account_balance, currency, version, created_at, updated_at) VALUES
-('Tech Store', 0.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Fashion Boutique', 0.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Electronics Hub', 0.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Book Emporium', 0.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+INSERT INTO merchants (id, name, account_balance, currency, version, created_at, updated_at) VALUES
+('770e8400-e29b-41d4-a716-446655440000', 'Tech Store', 0.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('770e8400-e29b-41d4-a716-446655440001', 'Fashion Boutique', 0.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('770e8400-e29b-41d4-a716-446655440002', 'Electronics Hub', 0.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('770e8400-e29b-41d4-a716-446655440003', 'Book Emporium', 0.00, 'USD', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
 
--- Seed Products for Tech Store (merchant_id = 1)
-INSERT INTO products (merchant_id, sku, name, price, currency, created_at, updated_at) VALUES
-(1, 'LAPTOP-001', 'Gaming Laptop Pro', 1299.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(1, 'MOUSE-001', 'Wireless Gaming Mouse', 79.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(1, 'KEYBOARD-001', 'Mechanical Keyboard', 149.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(1, 'MONITOR-001', '4K Gaming Monitor', 599.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(1, 'HEADPHONES-001', 'Wireless Headphones', 199.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+-- Seed Products for Tech Store
+INSERT INTO products (id, merchant_id, sku, name, price, currency, created_at, updated_at) VALUES
+('880e8400-e29b-41d4-a716-446655440000', '770e8400-e29b-41d4-a716-446655440000', 'LAPTOP-001', 'Gaming Laptop Pro', 1299.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440001', '770e8400-e29b-41d4-a716-446655440000', 'MOUSE-001', 'Wireless Gaming Mouse', 79.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440002', '770e8400-e29b-41d4-a716-446655440000', 'KEYBOARD-001', 'Mechanical Keyboard', 149.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440003', '770e8400-e29b-41d4-a716-446655440000', 'MONITOR-001', '4K Gaming Monitor', 599.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440004', '770e8400-e29b-41d4-a716-446655440000', 'HEADPHONES-001', 'Wireless Headphones', 199.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (merchant_id, sku) DO UPDATE SET price = EXCLUDED.price;
 
--- Seed Products for Fashion Boutique (merchant_id = 2)
-INSERT INTO products (merchant_id, sku, name, price, currency, created_at, updated_at) VALUES
-(2, 'SHIRT-001', 'Classic White Shirt', 49.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(2, 'JEANS-001', 'Slim Fit Jeans', 89.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(2, 'JACKET-001', 'Leather Jacket', 299.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(2, 'SHOES-001', 'Running Shoes', 129.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+-- Seed Products for Fashion Boutique
+INSERT INTO products (id, merchant_id, sku, name, price, currency, created_at, updated_at) VALUES
+('880e8400-e29b-41d4-a716-446655440010', '770e8400-e29b-41d4-a716-446655440001', 'SHIRT-001', 'Classic White Shirt', 49.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440011', '770e8400-e29b-41d4-a716-446655440001', 'JEANS-001', 'Slim Fit Jeans', 89.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440012', '770e8400-e29b-41d4-a716-446655440001', 'JACKET-001', 'Leather Jacket', 299.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440013', '770e8400-e29b-41d4-a716-446655440001', 'SHOES-001', 'Running Shoes', 129.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (merchant_id, sku) DO UPDATE SET price = EXCLUDED.price;
 
--- Seed Products for Electronics Hub (merchant_id = 3)
-INSERT INTO products (merchant_id, sku, name, price, currency, created_at, updated_at) VALUES
-(3, 'PHONE-001', 'Smartphone Pro', 899.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(3, 'TABLET-001', 'Tablet Air', 499.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(3, 'SMARTWATCH-001', 'Smart Watch', 249.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+-- Seed Products for Electronics Hub
+INSERT INTO products (id, merchant_id, sku, name, price, currency, created_at, updated_at) VALUES
+('880e8400-e29b-41d4-a716-446655440020', '770e8400-e29b-41d4-a716-446655440002', 'PHONE-001', 'Smartphone Pro', 899.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440021', '770e8400-e29b-41d4-a716-446655440002', 'TABLET-001', 'Tablet Air', 499.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440022', '770e8400-e29b-41d4-a716-446655440002', 'SMARTWATCH-001', 'Smart Watch', 249.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (merchant_id, sku) DO UPDATE SET price = EXCLUDED.price;
 
--- Seed Products for Book Emporium (merchant_id = 4)
-INSERT INTO products (merchant_id, sku, name, price, currency, created_at, updated_at) VALUES
-(4, 'BOOK-001', 'Programming Guide', 39.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(4, 'BOOK-002', 'Design Patterns', 49.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(4, 'BOOK-003', 'System Architecture', 59.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+-- Seed Products for Book Emporium
+INSERT INTO products (id, merchant_id, sku, name, price, currency, created_at, updated_at) VALUES
+('880e8400-e29b-41d4-a716-446655440030', '770e8400-e29b-41d4-a716-446655440003', 'BOOK-001', 'Programming Guide', 39.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440031', '770e8400-e29b-41d4-a716-446655440003', 'BOOK-002', 'Design Patterns', 49.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('880e8400-e29b-41d4-a716-446655440032', '770e8400-e29b-41d4-a716-446655440003', 'BOOK-003', 'System Architecture', 59.99, 'USD', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (merchant_id, sku) DO UPDATE SET price = EXCLUDED.price;
 
 -- Seed Inventory for all products
-INSERT INTO inventory (product_id, quantity, version, created_at, updated_at)
-SELECT p.id, 
-       CASE 
-           WHEN p.merchant_id = 1 THEN 50  -- Tech Store: 50 items each
-           WHEN p.merchant_id = 2 THEN 100 -- Fashion Boutique: 100 items each
-           WHEN p.merchant_id = 3 THEN 30  -- Electronics Hub: 30 items each
-           WHEN p.merchant_id = 4 THEN 200 -- Book Emporium: 200 items each
-           ELSE 25
-       END,
-       0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-FROM products p
+INSERT INTO inventory (id, product_id, quantity, version, created_at, updated_at) VALUES
+-- Tech Store products (50 each)
+('990e8400-e29b-41d4-a716-446655440000', '880e8400-e29b-41d4-a716-446655440000', 50, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440001', '880e8400-e29b-41d4-a716-446655440001', 50, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440002', '880e8400-e29b-41d4-a716-446655440002', 50, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440003', '880e8400-e29b-41d4-a716-446655440003', 50, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440004', '880e8400-e29b-41d4-a716-446655440004', 50, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+-- Fashion Boutique products (100 each)
+('990e8400-e29b-41d4-a716-446655440010', '880e8400-e29b-41d4-a716-446655440010', 100, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440011', '880e8400-e29b-41d4-a716-446655440011', 100, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440012', '880e8400-e29b-41d4-a716-446655440012', 100, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440013', '880e8400-e29b-41d4-a716-446655440013', 100, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+-- Electronics Hub products (30 each)
+('990e8400-e29b-41d4-a716-446655440020', '880e8400-e29b-41d4-a716-446655440020', 30, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440021', '880e8400-e29b-41d4-a716-446655440021', 30, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440022', '880e8400-e29b-41d4-a716-446655440022', 30, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+-- Book Emporium products (200 each)
+('990e8400-e29b-41d4-a716-446655440030', '880e8400-e29b-41d4-a716-446655440030', 200, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440031', '880e8400-e29b-41d4-a716-446655440031', 200, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('990e8400-e29b-41d4-a716-446655440032', '880e8400-e29b-41d4-a716-446655440032', 200, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (product_id) DO UPDATE SET quantity = EXCLUDED.quantity;
 
 -- Seed some initial account transactions (recharges)
-INSERT INTO account_transactions (account_id, transaction_type, amount, balance_before, balance_after, reference_id, created_at)
-SELECT a.id, 'RECHARGE', 1000.00, 0.00, 1000.00, 'SEED-RECHARGE-' || a.id, CURRENT_TIMESTAMP
-FROM accounts a
-JOIN users u ON a.user_id = u.id
-WHERE u.username = 'john_doe'
-ON CONFLICT DO NOTHING;
-
-INSERT INTO account_transactions (account_id, transaction_type, amount, balance_before, balance_after, reference_id, created_at)
-SELECT a.id, 'RECHARGE', 500.00, 0.00, 500.00, 'SEED-RECHARGE-' || a.id, CURRENT_TIMESTAMP
-FROM accounts a
-JOIN users u ON a.user_id = u.id
-WHERE u.username = 'jane_smith'
-ON CONFLICT DO NOTHING;
+INSERT INTO account_transactions (id, account_id, transaction_type, amount, balance_before, balance_after, reference_id, created_at) VALUES
+('aa0e8400-e29b-41d4-a716-446655440000', '660e8400-e29b-41d4-a716-446655440000', 'RECHARGE', 1000.00, 0.00, 1000.00, 'SEED-RECHARGE-660e8400-e29b-41d4-a716-446655440000', CURRENT_TIMESTAMP),
+('aa0e8400-e29b-41d4-a716-446655440001', '660e8400-e29b-41d4-a716-446655440001', 'RECHARGE', 500.00, 0.00, 500.00, 'SEED-RECHARGE-660e8400-e29b-41d4-a716-446655440001', CURRENT_TIMESTAMP);
 
 -- Print summary
 DO $$

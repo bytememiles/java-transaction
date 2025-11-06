@@ -10,20 +10,21 @@ import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.LockModeType;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends JpaRepository<Account, UUID> {
     
     Optional<Account> findByUser(User user);
     
-    Optional<Account> findByUserId(Long userId);
+    Optional<Account> findByUserId(UUID userId);
     
     @Lock(LockModeType.OPTIMISTIC)
     @Query("SELECT a FROM Account a WHERE a.id = :id")
-    Optional<Account> findByIdWithLock(@Param("id") Long id);
+    Optional<Account> findByIdWithLock(@Param("id") UUID id);
     
     @Lock(LockModeType.OPTIMISTIC)
     @Query("SELECT a FROM Account a WHERE a.user.id = :userId")
-    Optional<Account> findByUserIdWithLock(@Param("userId") Long userId);
+    Optional<Account> findByUserIdWithLock(@Param("userId") UUID userId);
 }
 

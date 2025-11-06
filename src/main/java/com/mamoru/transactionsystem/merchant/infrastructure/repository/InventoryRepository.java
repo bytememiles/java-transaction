@@ -10,20 +10,21 @@ import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.LockModeType;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface InventoryRepository extends JpaRepository<Inventory, Long> {
+public interface InventoryRepository extends JpaRepository<Inventory, UUID> {
     
     Optional<Inventory> findByProduct(Product product);
     
-    Optional<Inventory> findByProductId(Long productId);
+    Optional<Inventory> findByProductId(UUID productId);
     
     @Lock(LockModeType.OPTIMISTIC)
     @Query("SELECT i FROM Inventory i WHERE i.id = :id")
-    Optional<Inventory> findByIdWithLock(@Param("id") Long id);
+    Optional<Inventory> findByIdWithLock(@Param("id") UUID id);
     
     @Lock(LockModeType.OPTIMISTIC)
     @Query("SELECT i FROM Inventory i WHERE i.product.id = :productId")
-    Optional<Inventory> findByProductIdWithLock(@Param("productId") Long productId);
+    Optional<Inventory> findByProductIdWithLock(@Param("productId") UUID productId);
 }
 

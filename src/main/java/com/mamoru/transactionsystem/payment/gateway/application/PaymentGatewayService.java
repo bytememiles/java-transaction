@@ -21,7 +21,7 @@ public class PaymentGatewayService {
      * @param amount the amount to recharge
      * @return transaction ID from the payment gateway
      */
-    public String processRecharge(Long userId, BigDecimal amount) {
+    public String processRecharge(UUID userId, BigDecimal amount) {
         log.info("Processing recharge through payment gateway for user ID: {}, amount: {}", userId, amount);
         
         // Mock payment gateway processing

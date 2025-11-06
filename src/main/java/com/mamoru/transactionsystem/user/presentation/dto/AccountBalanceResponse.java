@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountBalanceResponse {
-    private Long accountId;
+    private UUID accountId;
     private BigDecimal balance;
     private String currency;
 }

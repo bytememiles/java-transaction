@@ -13,9 +13,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Order, UUID> {
     
     Optional<Order> findByOrderNumber(String orderNumber);
     
@@ -23,9 +24,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     
     Page<Order> findByUser(User user, Pageable pageable);
     
-    List<Order> findByMerchantId(Long merchantId);
+    List<Order> findByMerchantId(UUID merchantId);
     
-    Page<Order> findByMerchantId(Long merchantId, Pageable pageable);
+    Page<Order> findByMerchantId(UUID merchantId, Pageable pageable);
     
     List<Order> findByStatus(OrderStatus status);
     
@@ -33,7 +34,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
            "AND o.status = 'COMPLETED' " +
            "AND o.createdAt BETWEEN :startDate AND :endDate")
     List<Order> findCompletedOrdersByMerchantAndDateRange(
-            @Param("merchantId") Long merchantId,
+            @Param("merchantId") UUID merchantId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
     
@@ -42,7 +43,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
            "AND o.status = 'COMPLETED' " +
            "AND o.createdAt BETWEEN :startDate AND :endDate")
     java.math.BigDecimal calculateTotalSalesValue(
-            @Param("merchantId") Long merchantId,
+            @Param("merchantId") UUID merchantId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
 }

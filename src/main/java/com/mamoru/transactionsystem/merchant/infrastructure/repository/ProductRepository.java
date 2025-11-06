@@ -7,20 +7,21 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, UUID> {
     
     List<Product> findByMerchant(Merchant merchant);
     
-    List<Product> findByMerchantId(Long merchantId);
+    List<Product> findByMerchantId(UUID merchantId);
     
     Optional<Product> findByMerchantAndSku(Merchant merchant, String sku);
     
-    Optional<Product> findByMerchantIdAndSku(Long merchantId, String sku);
+    Optional<Product> findByMerchantIdAndSku(UUID merchantId, String sku);
     
     boolean existsByMerchantAndSku(Merchant merchant, String sku);
     
-    boolean existsByMerchantIdAndSku(Long merchantId, String sku);
+    boolean existsByMerchantIdAndSku(UUID merchantId, String sku);
 }
 

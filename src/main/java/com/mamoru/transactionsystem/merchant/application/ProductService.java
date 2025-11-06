@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class ProductService {
     private final MerchantRepository merchantRepository;
     
     @Transactional
-    public Product createProduct(Long merchantId, Product product) {
+    public Product createProduct(UUID merchantId, Product product) {
         log.info("Creating product for merchant ID: {}, SKU: {}", merchantId, product.getSku());
         
         Merchant merchant = merchantRepository.findById(merchantId)
@@ -40,14 +41,14 @@ public class ProductService {
     }
     
     @Transactional(readOnly = true)
-    public Product getProductById(Long productId) {
+    public Product getProductById(UUID productId) {
         log.debug("Fetching product by ID: {}", productId);
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
     }
     
     @Transactional(readOnly = true)
-    public Product getProductByMerchantIdAndSku(Long merchantId, String sku) {
+    public Product getProductByMerchantIdAndSku(UUID merchantId, String sku) {
         log.debug("Fetching product by merchant ID: {} and SKU: {}", merchantId, sku);
         return productRepository.findByMerchantIdAndSku(merchantId, sku)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -55,7 +56,7 @@ public class ProductService {
     }
     
     @Transactional(readOnly = true)
-    public List<Product> getProductsByMerchantId(Long merchantId) {
+    public List<Product> getProductsByMerchantId(UUID merchantId) {
         log.debug("Fetching all products for merchant ID: {}", merchantId);
         return productRepository.findByMerchantId(merchantId);
     }

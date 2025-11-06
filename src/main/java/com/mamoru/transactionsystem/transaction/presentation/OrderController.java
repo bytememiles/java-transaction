@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class OrderController {
     @Operation(summary = "Place an order", description = "Places an order, deducts user balance, credits merchant, and deducts inventory. Requires X-User-Id header.")
     public ResponseEntity<ApiResponse<OrderResponse>> placeOrder(
             @Parameter(description = "User ID (required in header)", required = true) 
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-User-Id") UUID userId,
             @Valid @RequestBody OrderRequest request) {
         log.info("Placing order for user ID: {}, merchant ID: {}, SKU: {}, quantity: {}", 
                 userId, request.getMerchantId(), request.getSku(), request.getQuantity());
@@ -61,7 +63,7 @@ public class OrderController {
     @GetMapping("/{orderId}")
     @Operation(summary = "Get order by ID", description = "Retrieves order details by order ID")
     public ResponseEntity<ApiResponse<OrderResponse>> getOrder(
-            @Parameter(description = "Order ID", required = true) @PathVariable Long orderId) {
+            @Parameter(description = "Order ID", required = true) @PathVariable UUID orderId) {
         log.info("Fetching order with ID: {}", orderId);
         
         Order order = orderService.getOrderById(orderId);

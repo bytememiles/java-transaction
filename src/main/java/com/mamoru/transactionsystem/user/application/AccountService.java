@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,21 +29,21 @@ public class AccountService {
     private final PaymentGatewayService paymentGatewayService;
     
     @Transactional(readOnly = true)
-    public Account getAccountByUserId(Long userId) {
+    public Account getAccountByUserId(UUID userId) {
         log.debug("Fetching account for user ID: {}", userId);
         return accountRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Account", "userId", userId));
     }
     
     @Transactional(readOnly = true)
-    public BigDecimal getBalanceByUserId(Long userId) {
+    public BigDecimal getBalanceByUserId(UUID userId) {
         Account account = getAccountByUserId(userId);
         return account.getBalance();
     }
     
     @Transactional
     @Retryable(value = ObjectOptimisticLockingFailureException.class, maxAttempts = 3, backoff = @Backoff(delay = 100))
-    public Account rechargeAccount(Long userId, BigDecimal amount) {
+    public Account rechargeAccount(UUID userId, BigDecimal amount) {
         log.info("Recharging account for user ID: {} with amount: {}", userId, amount);
         
         Account account = accountRepository.findByUserIdWithLock(userId)
@@ -76,7 +77,7 @@ public class AccountService {
     
     @Transactional
     @Retryable(value = ObjectOptimisticLockingFailureException.class, maxAttempts = 3, backoff = @Backoff(delay = 100))
-    public Account debitAccount(Long userId, BigDecimal amount, String referenceId) {
+    public Account debitAccount(UUID userId, BigDecimal amount, String referenceId) {
         log.info("Debiting account for user ID: {} with amount: {}", userId, amount);
         
         Account account = accountRepository.findByUserIdWithLock(userId)
@@ -111,7 +112,7 @@ public class AccountService {
     
     @Transactional
     @Retryable(value = ObjectOptimisticLockingFailureException.class, maxAttempts = 3, backoff = @Backoff(delay = 100))
-    public Account creditAccount(Long userId, BigDecimal amount, String referenceId) {
+    public Account creditAccount(UUID userId, BigDecimal amount, String referenceId) {
         log.info("Crediting account for user ID: {} with amount: {}", userId, amount);
         
         Account account = accountRepository.findByUserIdWithLock(userId)

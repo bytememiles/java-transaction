@@ -237,6 +237,7 @@
                         <location>classpath:db/migration</location>
                     </locations>
                     <baselineOnMigrate>true</baselineOnMigrate>
+                    <cleanDisabled>false</cleanDisabled>
                 </configuration>
             </plugin>
             

@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/merchants/{merchantId}/inventory")
@@ -28,8 +29,8 @@ public class InventoryController {
     @PostMapping("/products/{productId}/add")
     @Operation(summary = "Add inventory quantity", description = "Adds quantity to the inventory for a product")
     public ResponseEntity<ApiResponse<InventoryResponse>> addInventory(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId,
-            @Parameter(description = "Product ID", required = true) @PathVariable Long productId,
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId,
+            @Parameter(description = "Product ID", required = true) @PathVariable UUID productId,
             @Valid @RequestBody AddInventoryRequest request) {
         log.info("Adding inventory for product ID: {}, quantity: {}", productId, request.getQuantity());
         
@@ -51,7 +52,7 @@ public class InventoryController {
     @GetMapping
     @Operation(summary = "Get all inventories", description = "Retrieves all inventory records for a merchant")
     public ResponseEntity<ApiResponse<List<InventoryResponse>>> getInventories(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId) {
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId) {
         log.info("Fetching inventories for merchant ID: {}", merchantId);
         
         List<Inventory> inventories = inventoryService.getInventoriesByMerchantId(merchantId);
@@ -74,8 +75,8 @@ public class InventoryController {
     @GetMapping("/products/{productId}")
     @Operation(summary = "Get inventory by product ID", description = "Retrieves inventory details for a specific product")
     public ResponseEntity<ApiResponse<InventoryResponse>> getInventory(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId,
-            @Parameter(description = "Product ID", required = true) @PathVariable Long productId) {
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId,
+            @Parameter(description = "Product ID", required = true) @PathVariable UUID productId) {
         log.info("Fetching inventory for product ID: {}", productId);
         
         Inventory inventory = inventoryService.getInventoryByProductId(productId);

@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -45,7 +47,7 @@ public class UserService {
     }
     
     @Transactional(readOnly = true)
-    public User getUserById(Long userId) {
+    public User getUserById(UUID userId) {
         log.debug("Fetching user by ID: {}", userId);
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));

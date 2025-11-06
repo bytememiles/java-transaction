@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class OrderRequest {
     
     @NotNull(message = "Merchant ID is required")
-    private Long merchantId;
+    private UUID merchantId;
     
     @NotBlank(message = "Product SKU is required")
     private String sku;

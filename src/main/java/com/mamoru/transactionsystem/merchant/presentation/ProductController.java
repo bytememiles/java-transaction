@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/merchants/{merchantId}/products")
@@ -29,7 +30,7 @@ public class ProductController {
     @PostMapping
     @Operation(summary = "Create a new product", description = "Creates a new product for the merchant")
     public ResponseEntity<ApiResponse<ProductResponse>> createProduct(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId,
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId,
             @Valid @RequestBody ProductRequest request) {
         log.info("Creating product for merchant ID: {}, SKU: {}", merchantId, request.getSku());
         
@@ -60,7 +61,7 @@ public class ProductController {
     @GetMapping
     @Operation(summary = "Get all products", description = "Retrieves all products for a merchant")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getProducts(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId) {
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId) {
         log.info("Fetching products for merchant ID: {}", merchantId);
         
         List<Product> products = productService.getProductsByMerchantId(merchantId);
@@ -84,8 +85,8 @@ public class ProductController {
     @GetMapping("/{productId}")
     @Operation(summary = "Get product by ID", description = "Retrieves product details by product ID")
     public ResponseEntity<ApiResponse<ProductResponse>> getProduct(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId,
-            @Parameter(description = "Product ID", required = true) @PathVariable Long productId) {
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId,
+            @Parameter(description = "Product ID", required = true) @PathVariable UUID productId) {
         log.info("Fetching product ID: {} for merchant ID: {}", productId, merchantId);
         
         Product product = productService.getProductById(productId);

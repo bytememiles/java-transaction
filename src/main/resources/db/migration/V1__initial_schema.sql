@@ -80,7 +80,7 @@ CREATE TABLE inventory_transactions (
 -- Transaction Module
 CREATE TABLE orders (
     id BIGSERIAL PRIMARY KEY,
-    order_number VARCHAR(50) UNIQUE NOT NULL,
+    order_number VARCHAR(50) NOT NULL,
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
     product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE RESTRICT,
     merchant_id BIGINT NOT NULL REFERENCES merchants(id) ON DELETE RESTRICT,
@@ -93,7 +93,8 @@ CREATE TABLE orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT chk_orders_quantity CHECK (quantity > 0),
     CONSTRAINT chk_orders_total_amount CHECK (total_amount >= 0),
-    CONSTRAINT chk_orders_status CHECK (status IN ('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED'))
+    CONSTRAINT chk_orders_status CHECK (status IN ('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED')),
+    CONSTRAINT uk_orders_order_number UNIQUE(order_number)
 );
 
 CREATE TABLE payments (

@@ -395,6 +395,116 @@ Migration commands respect your `.env` file configuration:
 - `DB_USERNAME` - Database username
 - `DB_PASSWORD` - Database password
 
+### Troubleshooting Migrations
+
+#### Check if Migration Files are Being Found
+
+```bash
+# Check if migration files exist in source
+ls -la src/main/resources/db/migration/
+
+# Check if migration files are in target (after compile)
+ls -la target/classes/db/migration/
+
+# If files are missing from target, rebuild:
+mvn clean compile
+```
+
+#### Verify Database Schema State
+
+```bash
+# Check Flyway migration history
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -d transaction_system -c "SELECT version, description, installed_on, success FROM flyway_schema_history ORDER BY installed_rank;"
+
+# Check if tables exist
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -d transaction_system -c "\dt"
+
+# Check column types (verify UUID conversion)
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -d transaction_system -c "SELECT table_name, column_name, data_type, column_default FROM information_schema.columns WHERE table_schema = 'public' AND column_name = 'id' ORDER BY table_name;"
+```
+
+#### Fix Missing Migration Files
+
+If Flyway shows "No migrations found":
+
+```bash
+# 1. Clean and rebuild to copy resources
+mvn clean compile
+
+# 2. Verify files are in target
+ls target/classes/db/migration/
+
+# 3. Run migration
+mvn flyway:migrate
+```
+
+#### Remove a Migration from History (if file was deleted)
+
+If you deleted a migration file but it's still in the database history:
+
+```bash
+# Check current migration history
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -d transaction_system -c "SELECT version, description FROM flyway_schema_history;"
+
+# Remove a specific migration from history (replace '3' with the version to remove)
+# WARNING: Only do this if the migration file no longer exists
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -d transaction_system -c "DELETE FROM flyway_schema_history WHERE version = '3';"
+```
+
+#### Verify UUID Columns are Working
+
+```bash
+# Check users table structure
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -d transaction_system -c "\d users"
+
+# Check if any IDs are NULL
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -d transaction_system -c "SELECT COUNT(*) as total_users, COUNT(id) as users_with_id, COUNT(*) FILTER (WHERE id IS NULL) as null_ids FROM users;"
+
+# View sample data
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -d transaction_system -c "SELECT id, username FROM users LIMIT 5;"
+```
+
+#### Reset Database (Development Only)
+
+If you need to completely reset the database:
+
+```bash
+# Option 1: Use Flyway clean (drops all objects)
+mvn flyway:clean
+mvn flyway:migrate
+
+# Option 2: Drop and recreate database
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -c "DROP DATABASE IF EXISTS transaction_system;"
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -c "CREATE DATABASE transaction_system;"
+mvn flyway:migrate
+```
+
+#### Check for Index Conflicts
+
+If you see index-related errors:
+
+```bash
+# List all indexes
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -d transaction_system -c "\di"
+
+# Check specific index
+echo "password" | sudo -S docker exec transaction-system-db psql -U postgres -d transaction_system -c "\d+ orders"
+```
+
+#### Common Issues and Solutions
+
+**Issue: "No migrations found"**
+- **Solution**: Run `mvn clean compile` first, then `mvn flyway:migrate`
+
+**Issue: "Migration V3 already applied but file missing"**
+- **Solution**: Remove from history: `DELETE FROM flyway_schema_history WHERE version = '3';`
+
+**Issue: "Index already exists" warnings**
+- **Solution**: This is normal if using `CREATE INDEX IF NOT EXISTS`. The warnings are harmless.
+
+**Issue: "Column type mismatch"**
+- **Solution**: Verify migration V2 was applied. Check with: `SELECT data_type FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'id';`
+
 ## Database Seeding
 
 The project includes a seeding script to populate the database with sample data for development and testing.

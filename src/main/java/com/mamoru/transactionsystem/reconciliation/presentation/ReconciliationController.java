@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/reconciliation/merchants/{merchantId}")
@@ -29,7 +30,7 @@ public class ReconciliationController {
     @Operation(summary = "Manually trigger reconciliation", 
                description = "Manually triggers reconciliation for yesterday's transactions")
     public ResponseEntity<ApiResponse<ReconciliationReportResponse>> runReconciliation(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId) {
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId) {
         log.info("Manually triggering reconciliation for merchant ID: {}", merchantId);
         
         ReconciliationReport report = reconciliationService.reconcileMerchantForYesterday(merchantId);
@@ -53,7 +54,7 @@ public class ReconciliationController {
     @Operation(summary = "Manually trigger reconciliation for specific date", 
                description = "Manually triggers reconciliation for a specific date")
     public ResponseEntity<ApiResponse<ReconciliationReportResponse>> runReconciliationForDate(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId,
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId,
             @Parameter(description = "Report date (yyyy-MM-dd)", required = true) 
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) {
         log.info("Manually triggering reconciliation for merchant ID: {} on date: {}", merchantId, reportDate);
@@ -79,7 +80,7 @@ public class ReconciliationController {
     @Operation(summary = "Get all reconciliation reports", 
                description = "Retrieves all reconciliation reports for a merchant")
     public ResponseEntity<ApiResponse<List<ReconciliationReportResponse>>> getReports(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId) {
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId) {
         log.info("Fetching reconciliation reports for merchant ID: {}", merchantId);
         
         List<ReconciliationReport> reports = reconciliationService.getReconciliationReportsByMerchant(merchantId);
@@ -105,7 +106,7 @@ public class ReconciliationController {
     @Operation(summary = "Get reconciliation report for specific date", 
                description = "Retrieves reconciliation report for a specific date")
     public ResponseEntity<ApiResponse<ReconciliationReportResponse>> getReport(
-            @Parameter(description = "Merchant ID", required = true) @PathVariable Long merchantId,
+            @Parameter(description = "Merchant ID", required = true) @PathVariable UUID merchantId,
             @Parameter(description = "Report date (yyyy-MM-dd)", required = true) 
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate reportDate) {
         log.info("Fetching reconciliation report for merchant ID: {} on date: {}", merchantId, reportDate);

@@ -12,9 +12,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface AccountTransactionRepository extends JpaRepository<AccountTransaction, Long> {
+public interface AccountTransactionRepository extends JpaRepository<AccountTransaction, UUID> {
     
     List<AccountTransaction> findByAccount(Account account);
     
@@ -25,7 +26,7 @@ public interface AccountTransactionRepository extends JpaRepository<AccountTrans
     @Query("SELECT at FROM AccountTransaction at WHERE at.account.id = :accountId " +
            "AND at.createdAt BETWEEN :startDate AND :endDate ORDER BY at.createdAt DESC")
     List<AccountTransaction> findByAccountIdAndDateRange(
-            @Param("accountId") Long accountId,
+            @Param("accountId") UUID accountId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
 }

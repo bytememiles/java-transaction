@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class ReconciliationService {
     private final OrderRepository orderRepository;
     
     @Transactional
-    public ReconciliationReport reconcileMerchant(Long merchantId, LocalDate reportDate) {
+    public ReconciliationReport reconcileMerchant(UUID merchantId, LocalDate reportDate) {
         log.info("Starting reconciliation for merchant ID: {} on date: {}", merchantId, reportDate);
         
         Merchant merchant = merchantService.getMerchantById(merchantId);
@@ -88,7 +89,7 @@ public class ReconciliationService {
     }
     
     @Transactional
-    public ReconciliationReport reconcileMerchantForYesterday(Long merchantId) {
+    public ReconciliationReport reconcileMerchantForYesterday(UUID merchantId) {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         return reconcileMerchant(merchantId, yesterday);
     }
@@ -121,7 +122,7 @@ public class ReconciliationService {
     }
     
     @Transactional(readOnly = true)
-    public ReconciliationReport getReconciliationReport(Long merchantId, LocalDate reportDate) {
+    public ReconciliationReport getReconciliationReport(UUID merchantId, LocalDate reportDate) {
         return reconciliationReportRepository
                 .findByMerchantIdAndReportDate(merchantId, reportDate)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -129,7 +130,7 @@ public class ReconciliationService {
     }
     
     @Transactional(readOnly = true)
-    public List<ReconciliationReport> getReconciliationReportsByMerchant(Long merchantId) {
+    public List<ReconciliationReport> getReconciliationReportsByMerchant(UUID merchantId) {
         return reconciliationReportRepository.findByMerchantId(merchantId);
     }
 }

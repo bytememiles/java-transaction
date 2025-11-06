@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,14 +29,14 @@ public class InventoryService {
     private final ProductRepository productRepository;
     
     @Transactional(readOnly = true)
-    public Inventory getInventoryByProductId(Long productId) {
+    public Inventory getInventoryByProductId(UUID productId) {
         log.debug("Fetching inventory for product ID: {}", productId);
         return inventoryRepository.findByProductId(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inventory", "productId", productId));
     }
     
     @Transactional(readOnly = true)
-    public List<Inventory> getInventoriesByMerchantId(Long merchantId) {
+    public List<Inventory> getInventoriesByMerchantId(UUID merchantId) {
         log.debug("Fetching all inventories for merchant ID: {}", merchantId);
         List<Product> products = productRepository.findByMerchantId(merchantId);
         return products.stream()
@@ -46,7 +47,7 @@ public class InventoryService {
     
     @Transactional
     @Retryable(value = ObjectOptimisticLockingFailureException.class, maxAttempts = 3, backoff = @Backoff(delay = 100))
-    public Inventory addInventory(Long productId, Integer quantity, String referenceId) {
+    public Inventory addInventory(UUID productId, Integer quantity, String referenceId) {
         log.info("Adding inventory for product ID: {}, quantity: {}", productId, quantity);
         
         Product product = productRepository.findById(productId)
@@ -85,7 +86,7 @@ public class InventoryService {
     
     @Transactional
     @Retryable(value = ObjectOptimisticLockingFailureException.class, maxAttempts = 3, backoff = @Backoff(delay = 100))
-    public Inventory deductInventory(Long productId, Integer quantity, String referenceId) {
+    public Inventory deductInventory(UUID productId, Integer quantity, String referenceId) {
         log.info("Deducting inventory for product ID: {}, quantity: {}", productId, quantity);
         
         Inventory inventory = inventoryRepository.findByProductIdWithLock(productId)

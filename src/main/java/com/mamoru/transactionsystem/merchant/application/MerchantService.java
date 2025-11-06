@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class MerchantService {
     }
     
     @Transactional(readOnly = true)
-    public Merchant getMerchantById(Long merchantId) {
+    public Merchant getMerchantById(UUID merchantId) {
         log.debug("Fetching merchant by ID: {}", merchantId);
         return merchantRepository.findById(merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Merchant", "id", merchantId));
@@ -37,7 +38,7 @@ public class MerchantService {
     
     @Transactional
     @Retryable(value = ObjectOptimisticLockingFailureException.class, maxAttempts = 3, backoff = @Backoff(delay = 100))
-    public Merchant creditMerchantAccount(Long merchantId, BigDecimal amount) {
+    public Merchant creditMerchantAccount(UUID merchantId, BigDecimal amount) {
         log.info("Crediting merchant account for merchant ID: {} with amount: {}", merchantId, amount);
         
         Merchant merchant = merchantRepository.findByIdWithLock(merchantId)

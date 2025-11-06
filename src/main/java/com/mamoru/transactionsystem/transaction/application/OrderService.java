@@ -39,7 +39,7 @@ public class OrderService {
     private final AccountService accountService;
     
     @Transactional
-    public Order processOrder(Long userId, Long merchantId, String sku, Integer quantity) {
+    public Order processOrder(UUID userId, UUID merchantId, String sku, Integer quantity) {
         log.info("Processing order for user ID: {}, merchant ID: {}, SKU: {}, quantity: {}", 
                 userId, merchantId, sku, quantity);
         
@@ -131,7 +131,7 @@ public class OrderService {
     }
     
     @Transactional(readOnly = true)
-    public Order getOrderById(Long orderId) {
+    public Order getOrderById(UUID orderId) {
         log.debug("Fetching order by ID: {}", orderId);
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));

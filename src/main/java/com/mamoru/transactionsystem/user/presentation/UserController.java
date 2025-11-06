@@ -18,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -55,7 +57,7 @@ public class UserController {
     @GetMapping("/{userId}")
     @Operation(summary = "Get user by ID", description = "Retrieves user details by user ID")
     public ResponseEntity<ApiResponse<UserResponse>> getUser(
-            @Parameter(description = "User ID", required = true) @PathVariable Long userId) {
+            @Parameter(description = "User ID", required = true) @PathVariable UUID userId) {
         log.info("Fetching user with ID: {}", userId);
         
         User user = userService.getUserById(userId);
@@ -74,7 +76,7 @@ public class UserController {
     @PostMapping("/{userId}/accounts/recharge")
     @Operation(summary = "Recharge user account", description = "Recharges the user's prepaid account via mocked payment gateway")
     public ResponseEntity<ApiResponse<AccountBalanceResponse>> rechargeAccount(
-            @Parameter(description = "User ID", required = true) @PathVariable Long userId,
+            @Parameter(description = "User ID", required = true) @PathVariable UUID userId,
             @Valid @RequestBody AccountRechargeRequest request) {
         log.info("Recharging account for user ID: {} with amount: {}", userId, request.getAmount());
         
@@ -92,7 +94,7 @@ public class UserController {
     @GetMapping("/{userId}/accounts/balance")
     @Operation(summary = "Get account balance", description = "Retrieves the current balance of the user's prepaid account")
     public ResponseEntity<ApiResponse<AccountBalanceResponse>> getAccountBalance(
-            @Parameter(description = "User ID", required = true) @PathVariable Long userId) {
+            @Parameter(description = "User ID", required = true) @PathVariable UUID userId) {
         log.info("Fetching account balance for user ID: {}", userId);
         
         var balance = accountService.getBalanceByUserId(userId);

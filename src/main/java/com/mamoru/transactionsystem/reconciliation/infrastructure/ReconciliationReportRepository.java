@@ -8,17 +8,18 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface ReconciliationReportRepository extends JpaRepository<ReconciliationReport, Long> {
+public interface ReconciliationReportRepository extends JpaRepository<ReconciliationReport, UUID> {
     
     Optional<ReconciliationReport> findByMerchantAndReportDate(Merchant merchant, LocalDate reportDate);
     
-    Optional<ReconciliationReport> findByMerchantIdAndReportDate(Long merchantId, LocalDate reportDate);
+    Optional<ReconciliationReport> findByMerchantIdAndReportDate(UUID merchantId, LocalDate reportDate);
     
     List<ReconciliationReport> findByMerchant(Merchant merchant);
     
-    List<ReconciliationReport> findByMerchantId(Long merchantId);
+    List<ReconciliationReport> findByMerchantId(UUID merchantId);
     
     List<ReconciliationReport> findByReportDate(LocalDate reportDate);
 }
