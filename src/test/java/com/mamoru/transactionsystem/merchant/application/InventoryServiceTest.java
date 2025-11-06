@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,19 +35,22 @@ class InventoryServiceTest {
     @InjectMocks
     private InventoryService inventoryService;
     
+    private static final UUID PRODUCT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private static final UUID INVENTORY_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
+    
     private Product product;
     private Inventory inventory;
     
     @BeforeEach
     void setUp() {
         product = Product.builder()
-                .id(1L)
+                .id(PRODUCT_ID)
                 .sku("TEST-001")
                 .name("Test Product")
                 .build();
         
         inventory = Inventory.builder()
-                .id(1L)
+                .id(INVENTORY_ID)
                 .product(product)
                 .quantity(100)
                 .build();
@@ -54,12 +58,12 @@ class InventoryServiceTest {
     
     @Test
     void testAddInventory_Success() {
-        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-        when(inventoryRepository.findByProductIdWithLock(1L)).thenReturn(Optional.of(inventory));
+        when(productRepository.findById(PRODUCT_ID)).thenReturn(Optional.of(product));
+        when(inventoryRepository.findByProductIdWithLock(PRODUCT_ID)).thenReturn(Optional.of(inventory));
         when(inventoryRepository.save(any(Inventory.class))).thenReturn(inventory);
         when(inventoryTransactionRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         
-        Inventory result = inventoryService.addInventory(1L, 50, "REF-001");
+        Inventory result = inventoryService.addInventory(PRODUCT_ID, 50, "REF-001");
         
         assertNotNull(result);
         verify(inventoryRepository, times(1)).save(any(Inventory.class));
@@ -68,19 +72,19 @@ class InventoryServiceTest {
     
     @Test
     void testAddInventory_ProductNotFound() {
-        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+        when(productRepository.findById(PRODUCT_ID)).thenReturn(Optional.empty());
         
         assertThrows(ResourceNotFoundException.class, 
-                () -> inventoryService.addInventory(1L, 50, "REF-001"));
+                () -> inventoryService.addInventory(PRODUCT_ID, 50, "REF-001"));
     }
     
     @Test
     void testDeductInventory_Success() {
-        when(inventoryRepository.findByProductIdWithLock(1L)).thenReturn(Optional.of(inventory));
+        when(inventoryRepository.findByProductIdWithLock(PRODUCT_ID)).thenReturn(Optional.of(inventory));
         when(inventoryRepository.save(any(Inventory.class))).thenReturn(inventory);
         when(inventoryTransactionRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         
-        Inventory result = inventoryService.deductInventory(1L, 30, "REF-001");
+        Inventory result = inventoryService.deductInventory(PRODUCT_ID, 30, "REF-001");
         
         assertNotNull(result);
         verify(inventoryRepository, times(1)).save(any(Inventory.class));
@@ -89,10 +93,10 @@ class InventoryServiceTest {
     
     @Test
     void testDeductInventory_NotFound() {
-        when(inventoryRepository.findByProductIdWithLock(1L)).thenReturn(Optional.empty());
+        when(inventoryRepository.findByProductIdWithLock(PRODUCT_ID)).thenReturn(Optional.empty());
         
         assertThrows(ResourceNotFoundException.class, 
-                () -> inventoryService.deductInventory(1L, 30, "REF-001"));
+                () -> inventoryService.deductInventory(PRODUCT_ID, 30, "REF-001"));
     }
 }
 

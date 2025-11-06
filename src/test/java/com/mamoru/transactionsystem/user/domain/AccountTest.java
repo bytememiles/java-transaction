@@ -4,10 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AccountTest {
+    
+    private static final UUID USER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private static final UUID ACCOUNT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
     
     private Account account;
     private User user;
@@ -15,13 +19,13 @@ class AccountTest {
     @BeforeEach
     void setUp() {
         user = User.builder()
-                .id(1L)
+                .id(USER_ID)
                 .username("testuser")
                 .email("test@example.com")
                 .build();
         
         account = Account.builder()
-                .id(1L)
+                .id(ACCOUNT_ID)
                 .user(user)
                 .balance(BigDecimal.valueOf(100.00))
                 .currency("USD")

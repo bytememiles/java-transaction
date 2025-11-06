@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,12 +31,14 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
     
+    private static final UUID USER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    
     private User user;
     
     @BeforeEach
     void setUp() {
         user = User.builder()
-                .id(1L)
+                .id(USER_ID)
                 .username("testuser")
                 .email("test@example.com")
                 .build();
@@ -81,21 +84,21 @@ class UserServiceTest {
     
     @Test
     void testGetUserById_Success() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
         
-        User result = userService.getUserById(1L);
+        User result = userService.getUserById(USER_ID);
         
         assertNotNull(result);
-        assertEquals(1L, result.getId());
-        verify(userRepository, times(1)).findById(1L);
+        assertEquals(USER_ID, result.getId());
+        verify(userRepository, times(1)).findById(USER_ID);
     }
     
     @Test
     void testGetUserById_NotFound() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.empty());
         
-        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(1L));
-        verify(userRepository, times(1)).findById(1L);
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(USER_ID));
+        verify(userRepository, times(1)).findById(USER_ID);
     }
 }
 

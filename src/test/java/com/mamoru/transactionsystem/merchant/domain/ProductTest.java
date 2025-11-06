@@ -4,22 +4,26 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProductTest {
+    
+    private static final UUID MERCHANT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private static final UUID PRODUCT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
     
     private Product product;
     
     @BeforeEach
     void setUp() {
         Merchant merchant = Merchant.builder()
-                .id(1L)
+                .id(MERCHANT_ID)
                 .name("Test Merchant")
                 .build();
         
         product = Product.builder()
-                .id(1L)
+                .id(PRODUCT_ID)
                 .merchant(merchant)
                 .sku("TEST-001")
                 .name("Test Product")

@@ -3,9 +3,15 @@ package com.mamoru.transactionsystem.merchant.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InventoryTest {
+    
+    private static final UUID MERCHANT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private static final UUID PRODUCT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
+    private static final UUID INVENTORY_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440002");
     
     private Inventory inventory;
     private Product product;
@@ -13,12 +19,12 @@ class InventoryTest {
     @BeforeEach
     void setUp() {
         Merchant merchant = Merchant.builder()
-                .id(1L)
+                .id(MERCHANT_ID)
                 .name("Test Merchant")
                 .build();
         
         product = Product.builder()
-                .id(1L)
+                .id(PRODUCT_ID)
                 .merchant(merchant)
                 .sku("TEST-001")
                 .name("Test Product")
@@ -26,7 +32,7 @@ class InventoryTest {
                 .build();
         
         inventory = Inventory.builder()
-                .id(1L)
+                .id(INVENTORY_ID)
                 .product(product)
                 .quantity(100)
                 .version(0L)

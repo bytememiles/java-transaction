@@ -4,17 +4,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MerchantTest {
+    
+    private static final UUID MERCHANT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
     
     private Merchant merchant;
     
     @BeforeEach
     void setUp() {
         merchant = Merchant.builder()
-                .id(1L)
+                .id(MERCHANT_ID)
                 .name("Test Merchant")
                 .accountBalance(BigDecimal.valueOf(500.00))
                 .currency("USD")

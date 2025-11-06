@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,6 +57,13 @@ class OrderServiceTest {
     @InjectMocks
     private OrderService orderService;
     
+    private static final UUID USER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private static final UUID MERCHANT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
+    private static final UUID PRODUCT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440002");
+    private static final UUID ACCOUNT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440003");
+    private static final UUID INVENTORY_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440004");
+    private static final UUID ORDER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440005");
+    
     private User user;
     private Merchant merchant;
     private Product product;
@@ -64,23 +72,23 @@ class OrderServiceTest {
     
     @BeforeEach
     void setUp() {
-        user = User.builder().id(1L).username("testuser").build();
+        user = User.builder().id(USER_ID).username("testuser").build();
         account = Account.builder()
-                .id(1L)
+                .id(ACCOUNT_ID)
                 .user(user)
                 .balance(BigDecimal.valueOf(100.00))
                 .currency("USD")
                 .build();
-        merchant = Merchant.builder().id(1L).name("Test Merchant").build();
+        merchant = Merchant.builder().id(MERCHANT_ID).name("Test Merchant").build();
         product = Product.builder()
-                .id(1L)
+                .id(PRODUCT_ID)
                 .merchant(merchant)
                 .sku("TEST-001")
                 .name("Test Product")
                 .price(BigDecimal.valueOf(10.00))
                 .build();
         inventory = Inventory.builder()
-                .id(1L)
+                .id(INVENTORY_ID)
                 .product(product)
                 .quantity(100)
                 .build();
@@ -88,57 +96,57 @@ class OrderServiceTest {
     
     @Test
     void testProcessOrder_Success() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(productService.getProductByMerchantIdAndSku(1L, "TEST-001")).thenReturn(product);
-        when(inventoryService.getInventoryByProductId(1L)).thenReturn(inventory);
-        when(accountService.getBalanceByUserId(1L)).thenReturn(BigDecimal.valueOf(100.00));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(productService.getProductByMerchantIdAndSku(MERCHANT_ID, "TEST-001")).thenReturn(product);
+        when(inventoryService.getInventoryByProductId(PRODUCT_ID)).thenReturn(inventory);
+        when(accountService.getBalanceByUserId(USER_ID)).thenReturn(BigDecimal.valueOf(100.00));
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
             Order order = invocation.getArgument(0);
-            order.setId(1L);
+            order.setId(ORDER_ID);
             order.setOrderNumber("ORD-001");
             return order;
         });
         when(paymentRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         
-        when(accountService.debitAccount(anyLong(), any(), anyString())).thenReturn(account);
-        doReturn(merchant).when(merchantService).creditMerchantAccount(anyLong(), any());
-        doReturn(inventory).when(inventoryService).deductInventory(anyLong(), anyInt(), anyString());
+        when(accountService.debitAccount(any(UUID.class), any(), anyString())).thenReturn(account);
+        doReturn(merchant).when(merchantService).creditMerchantAccount(any(UUID.class), any());
+        doReturn(inventory).when(inventoryService).deductInventory(any(UUID.class), anyInt(), anyString());
         
-        Order order = orderService.processOrder(1L, 1L, "TEST-001", 5);
+        Order order = orderService.processOrder(USER_ID, MERCHANT_ID, "TEST-001", 5);
         
         assertNotNull(order);
         assertEquals(OrderStatus.COMPLETED, order.getStatus());
         verify(orderRepository, atLeastOnce()).save(any(Order.class));
-        verify(accountService, times(1)).debitAccount(anyLong(), any(), anyString());
-        verify(merchantService, times(1)).creditMerchantAccount(anyLong(), any());
-        verify(inventoryService, times(1)).deductInventory(anyLong(), anyInt(), anyString());
+        verify(accountService, times(1)).debitAccount(any(UUID.class), any(), anyString());
+        verify(merchantService, times(1)).creditMerchantAccount(any(UUID.class), any());
+        verify(inventoryService, times(1)).deductInventory(any(UUID.class), anyInt(), anyString());
     }
     
     @Test
     void testProcessOrder_InsufficientStock() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(productService.getProductByMerchantIdAndSku(1L, "TEST-001")).thenReturn(product);
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(productService.getProductByMerchantIdAndSku(MERCHANT_ID, "TEST-001")).thenReturn(product);
         
         Inventory lowInventory = Inventory.builder()
-                .id(1L)
+                .id(INVENTORY_ID)
                 .product(product)
                 .quantity(3)
                 .build();
-        when(inventoryService.getInventoryByProductId(1L)).thenReturn(lowInventory);
+        when(inventoryService.getInventoryByProductId(PRODUCT_ID)).thenReturn(lowInventory);
         
         assertThrows(InvalidOperationException.class, 
-                () -> orderService.processOrder(1L, 1L, "TEST-001", 5));
+                () -> orderService.processOrder(USER_ID, MERCHANT_ID, "TEST-001", 5));
     }
     
     @Test
     void testProcessOrder_InsufficientBalance() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(productService.getProductByMerchantIdAndSku(1L, "TEST-001")).thenReturn(product);
-        when(inventoryService.getInventoryByProductId(1L)).thenReturn(inventory);
-        when(accountService.getBalanceByUserId(1L)).thenReturn(BigDecimal.valueOf(10.00)); // Low balance
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(productService.getProductByMerchantIdAndSku(MERCHANT_ID, "TEST-001")).thenReturn(product);
+        when(inventoryService.getInventoryByProductId(PRODUCT_ID)).thenReturn(inventory);
+        when(accountService.getBalanceByUserId(USER_ID)).thenReturn(BigDecimal.valueOf(10.00)); // Low balance
         
         assertThrows(InvalidOperationException.class, 
-                () -> orderService.processOrder(1L, 1L, "TEST-001", 5));
+                () -> orderService.processOrder(USER_ID, MERCHANT_ID, "TEST-001", 5));
     }
 }
 

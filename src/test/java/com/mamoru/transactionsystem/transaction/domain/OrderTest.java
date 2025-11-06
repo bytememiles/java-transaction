@@ -7,21 +7,27 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class OrderTest {
     
+    private static final UUID USER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private static final UUID MERCHANT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
+    private static final UUID PRODUCT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440002");
+    private static final UUID ORDER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440003");
+    
     private Order order;
     
     @BeforeEach
     void setUp() {
-        User user = User.builder().id(1L).username("testuser").build();
-        Merchant merchant = Merchant.builder().id(1L).name("Test Merchant").build();
-        Product product = Product.builder().id(1L).merchant(merchant).sku("TEST-001").build();
+        User user = User.builder().id(USER_ID).username("testuser").build();
+        Merchant merchant = Merchant.builder().id(MERCHANT_ID).name("Test Merchant").build();
+        Product product = Product.builder().id(PRODUCT_ID).merchant(merchant).sku("TEST-001").build();
         
         order = Order.builder()
-                .id(1L)
+                .id(ORDER_ID)
                 .orderNumber("ORD-001")
                 .user(user)
                 .product(product)
